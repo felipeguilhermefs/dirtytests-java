@@ -1,5 +1,8 @@
 package eu.qwan.exercises.dirtytests.obscure.domain;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 public class TransportOrganisation {
   private String organisationReferenceNumber;
   private OrganisationType organisationType;

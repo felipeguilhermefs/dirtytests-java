@@ -29,7 +29,7 @@ public class CarrierProcessorTest {
   private ProcessRepository processRepository;
 
   private CarrierProcessor carrierProcessor = new CarrierProcessor();
-  private TransportOrganisation          transportOrganisation;
+  private TransportOrganisation transportOrganisation = new TransportOrganisation("CAR1", OrganisationType.CARRIER);
   private Transport                      transport;
   @Mock
   private AssignCarrierProcessController assignCarrierProcessController;
@@ -43,9 +43,6 @@ public class CarrierProcessorTest {
 
   @BeforeEach
   void setup() {
-    transportOrganisation = mock(TransportOrganisation.class);
-    when(transportOrganisation.getOrganisationType()).thenReturn(OrganisationType.CARRIER);
-    when(transportOrganisation.getOrganisationReferenceNumber()).thenReturn("CAR1");
   }
 
   @Test
