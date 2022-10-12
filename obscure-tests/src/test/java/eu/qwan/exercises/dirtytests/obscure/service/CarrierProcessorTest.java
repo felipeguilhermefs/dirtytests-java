@@ -42,7 +42,8 @@ public class CarrierProcessorTest {
 
   @Test
   public void processCarrier() {
-    initMocks("CAR1", "CAR2", true);
+    when(transportOrganisation.getOrganisationReferenceNumber()).thenReturn("CAR1");
+    initMocks("CAR2", true);
 
     carrierProcessor.updateProcess(transport, AssignmentTaskState.NOMINATED);
     verify(assignCarrierProcessController, times(1)).//
@@ -51,7 +52,8 @@ public class CarrierProcessorTest {
 
   @Test
   public void changeToSameCarrier() {
-    initMocks("CAR1", "CAR1", true);
+    when(transportOrganisation.getOrganisationReferenceNumber()).thenReturn("CAR1");
+    initMocks("CAR1", true);
 
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
     verify(assignCarrierProcessController, times(0)).//
@@ -60,7 +62,8 @@ public class CarrierProcessorTest {
 
   @Test
   public void changeCarrierToOther() {
-    initMocks("CAR1", "CAR2", true);
+    when(transportOrganisation.getOrganisationReferenceNumber()).thenReturn("CAR1");
+    initMocks("CAR2", true);
 
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
     verify(assignCarrierProcessController, times(1)).//
@@ -71,14 +74,15 @@ public class CarrierProcessorTest {
 
   @Test
   public void changeCarrierToOtherStateChangeNotAllowed() {
-    initMocks("CAR1", "CAR2", false);
+    when(transportOrganisation.getOrganisationReferenceNumber()).thenReturn("CAR1");
+    initMocks("CAR2", false);
 
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
     verify(assignCarrierProcessController, times(0)).//
             changeState(any(Process.class), any(Task.class), any(AssignmentTaskState.class), eq(null));
   }
 
-  private void initMocks(String transportOrgId, String carrierOrgId, boolean stateChangeAllowed) {
+  private void initMocks(String carrierOrgId, boolean stateChangeAllowed) {
     assignmentCarrierTask = mock(AssignmentCarrierTask.class);
     when(assignmentCarrierTask.isStateChangeAllowed(any(AssignmentTaskState.class))).thenReturn(stateChangeAllowed);
     when(assignmentCarrierTask.getState()).thenReturn(AssignmentTaskState.NOMINATED);
@@ -89,7 +93,6 @@ public class CarrierProcessorTest {
     when(processRepository.findByDefinitionAndBusinessObject(any(ProcessDefinition.class), anyString())).thenReturn(process);
 
     transportOrganisation = mock(TransportOrganisation.class);
-    when(transportOrganisation.getOrganisationReferenceNumber()).thenReturn(transportOrgId);
     when(transportOrganisation.getOrganisationType()).thenReturn(OrganisationType.CARRIER);
 
     transport = new Transport();
