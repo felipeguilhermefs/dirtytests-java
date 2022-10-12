@@ -10,6 +10,7 @@ import eu.qwan.exercises.dirtytests.obscure.repositories.ProcessRepository;
 import eu.qwan.exercises.dirtytests.obscure.repositories.TransportRepository;
 import eu.qwan.exercises.dirtytests.obscure.request.AssignCarrierRequest;
 import eu.qwan.exercises.dirtytests.obscure.request.OrganisationDto;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -40,9 +41,15 @@ public class CarrierProcessorTest {
   @Mock
   private NotificationPublisher          notificationPublisher;
 
+  @BeforeEach
+  void setup() {
+    transportOrganisation = mock(TransportOrganisation.class);
+    when(transportOrganisation.getOrganisationType()).thenReturn(OrganisationType.CARRIER);
+    when(transportOrganisation.getOrganisationReferenceNumber()).thenReturn("CAR1");
+  }
+
   @Test
   public void processCarrier() {
-    when(transportOrganisation.getOrganisationReferenceNumber()).thenReturn("CAR1");
     initMocks("CAR2", true);
 
     carrierProcessor.updateProcess(transport, AssignmentTaskState.NOMINATED);
@@ -52,7 +59,6 @@ public class CarrierProcessorTest {
 
   @Test
   public void changeToSameCarrier() {
-    when(transportOrganisation.getOrganisationReferenceNumber()).thenReturn("CAR1");
     initMocks("CAR1", true);
 
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
@@ -62,7 +68,6 @@ public class CarrierProcessorTest {
 
   @Test
   public void changeCarrierToOther() {
-    when(transportOrganisation.getOrganisationReferenceNumber()).thenReturn("CAR1");
     initMocks("CAR2", true);
 
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
@@ -74,7 +79,6 @@ public class CarrierProcessorTest {
 
   @Test
   public void changeCarrierToOtherStateChangeNotAllowed() {
-    when(transportOrganisation.getOrganisationReferenceNumber()).thenReturn("CAR1");
     initMocks("CAR2", false);
 
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
@@ -91,9 +95,6 @@ public class CarrierProcessorTest {
     when(process.getTask(any(AssignmentTaskDefinition.class))).thenReturn(assignmentCarrierTask);
 
     when(processRepository.findByDefinitionAndBusinessObject(any(ProcessDefinition.class), anyString())).thenReturn(process);
-
-    transportOrganisation = mock(TransportOrganisation.class);
-    when(transportOrganisation.getOrganisationType()).thenReturn(OrganisationType.CARRIER);
 
     transport = new Transport();
     transport.setOwner(transportOrganisation);
