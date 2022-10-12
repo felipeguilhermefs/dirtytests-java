@@ -1,13 +1,10 @@
 package eu.qwan.exercises.dirtytests.obscure.request;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@AllArgsConstructor
+@Data
 public class OrganisationDto {
-  private String orn;
-
-  public String getOrn() {
-    return orn;
-  }
-
-  public void setOrn(String orn) {
-    this.orn = orn;
-  }
+  private final String orn;
 }
