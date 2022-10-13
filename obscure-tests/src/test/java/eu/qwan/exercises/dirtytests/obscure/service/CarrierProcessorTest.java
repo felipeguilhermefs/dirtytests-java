@@ -31,10 +31,10 @@ public class CarrierProcessorTest {
   @Mock
   private ProcessRepository processRepository;
 
-  private CarrierProcessor carrierProcessor = new CarrierProcessor();
   @Mock
   private AssignCarrierProcessController assignCarrierProcessController;
   private final TransportRepository transportRepository = new InMemoryTransportRepository();
+  private final CarrierProcessor carrierProcessor = new CarrierProcessor(transportRepository);
   @Mock
   private CarrierUpdater                 carrierUpdaterMock;
   @Mock
@@ -107,7 +107,6 @@ public class CarrierProcessorTest {
 
     carrierProcessor.setController(assignCarrierProcessController);
     carrierProcessor.setProcessRepository(processRepository);
-    carrierProcessor.setTransportRepository(transportRepository);
     carrierProcessor.setCarrierUpdater(carrierUpdaterMock);
     carrierProcessor.setNotificationPublisher(notificationPublisher);
   }
