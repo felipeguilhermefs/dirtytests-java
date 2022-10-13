@@ -34,7 +34,7 @@ public class CarrierProcessorTest {
 
   private final ProcessRepository processRepository = new InMemoryProcessRepository();
   private final TransportRepository transportRepository = new InMemoryTransportRepository();
-  private final OrganisationRepository organisationRepository = new InMemoryOrganisationRepository();
+  private final InMemoryOrganisationRepository organisationRepository = new InMemoryOrganisationRepository();
   private final CarrierUpdater carrierUpdater = new CarrierUpdater(transportRepository, organisationRepository);
   private final NotificationPublisher notificationPublisher = mock(NotificationPublisher.class);
   private final CarrierProcessor carrierProcessor = new CarrierProcessor(
@@ -46,8 +46,12 @@ public class CarrierProcessorTest {
 
   @BeforeEach
   void setup() {
-    var organisation = new TransportOrganisation("CAR1", OrganisationType.CARRIER);
-    var transport = new Transport(organisation, TRN, organisation);
+    var primeOrganisation = new TransportOrganisation("CAR1", OrganisationType.CARRIER);
+    organisationRepository.save("CAR1", primeOrganisation);
+    var otherOrganisation = new TransportOrganisation("CAR2", OrganisationType.CARRIER);
+    organisationRepository.save("CAR2", otherOrganisation);
+
+    var transport = new Transport(primeOrganisation, TRN, primeOrganisation);
     transportRepository.save(transport);
   }
 
@@ -75,22 +79,45 @@ public class CarrierProcessorTest {
   }
 
   @Test
-  public void changeCarrierToOther() {
+  public void changeCarrierToOtherOrganisation() {
     setupProcessState(INITIAL);
 
     var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto("CAR2"));
 
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
+
+    var expectedTransport = transportRepository.findByTrn(TRN);
+    assertEquals("CAR2", expectedTransport.getCarrier().getOrganisationReferenceNumber());
+  }
+
+  @Test
+  public void sendsNotificationWhenChangingCarrierToOtherOrganisation() {
+    setupProcessState(INITIAL);
+
+    var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto("CAR2"));
+
+    carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
+
     verify(notificationPublisher).sendYouHaveBeenAssignedAsCarierNotification(
         transportRepository.findByTrn(TRN),
         "CAR2"
     );
+  }
+
+  @Test
+  public void changeCarrierToOtherOrganisationNominatesProcess() {
+    setupProcessState(INITIAL);
+
+    var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto("CAR2"));
+
+    carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
+
     var expectedProcess = processRepository.findByDefinitionAndBusinessObject(ProcessDefinition.CARRIER_ASSIGNMENT, TRN);
     assertEquals(NOMINATED, expectedProcess.getTask(ASSIGN_CARRIER).getState());
   }
 
   @Test
-  public void changeCarrierToOtherStateChangeNotAllowed() {
+  public void changeFromAssignedToNominatedNotAllowed() {
     setupProcessState(ASSIGNED);
 
     var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto("CAR2"));
