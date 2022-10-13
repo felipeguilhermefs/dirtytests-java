@@ -50,7 +50,9 @@ public class CarrierProcessorTest {
   public void processCarrier() {
     initMocks(true);
 
-    carrierProcessor.updateProcess(transport, AssignmentTaskState.NOMINATED);
+    var assignCarrierRequest = new AssignCarrierRequest("TRN", new OrganisationDto("CAR2"));
+    carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
+
     verify(assignCarrierProcessController, times(1)).//
         changeState(process, assignmentCarrierTask, AssignmentTaskState.NOMINATED, null);
   }

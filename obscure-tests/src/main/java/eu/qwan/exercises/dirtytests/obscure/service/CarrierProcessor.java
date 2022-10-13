@@ -32,7 +32,7 @@ public class CarrierProcessor {
     }
   }
 
-  public void updateProcess(Transport transport, AssignmentTaskState taskState) {
+  private void updateProcess(Transport transport, AssignmentTaskState taskState) {
     final Process process = processRepository
         .findByDefinitionAndBusinessObject(ProcessDefinition.CARRIER_ASSIGNMENT, transport.getTransportReferenceNumber());
     final Task task = process.getTask(AssignmentTaskDefinition.ASSIGN_CARRIER);
