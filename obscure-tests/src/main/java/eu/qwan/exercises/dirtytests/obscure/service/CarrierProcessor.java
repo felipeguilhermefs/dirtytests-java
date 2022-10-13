@@ -19,15 +19,17 @@ public class CarrierProcessor {
   private AssignCarrierProcessController controller;
   private final ProcessRepository processRepository;
   private final TransportRepository transportRepository;
-  private CarrierUpdater                 carrierUpdater;
+  private final CarrierUpdater carrierUpdater;
   private NotificationPublisher          notificationPublisher;
 
   public CarrierProcessor(
       TransportRepository transportRepository,
-      ProcessRepository processRepository
+      ProcessRepository processRepository,
+      CarrierUpdater carrierUpdater
   ) {
     this.transportRepository = transportRepository;
     this.processRepository = processRepository;
+    this.carrierUpdater = carrierUpdater;
   }
 
   public void processAssignCarrierRequest(AssignCarrierRequest assignCarrierRequest) {
@@ -54,10 +56,6 @@ public class CarrierProcessor {
 
   public void setController(AssignCarrierProcessController controller) {
     this.controller = controller;
-  }
-
-  public void setCarrierUpdater(CarrierUpdater carrierUpdater) {
-    this.carrierUpdater = carrierUpdater;
   }
 
   public void setNotificationPublisher(NotificationPublisher notificationPublisher) {
