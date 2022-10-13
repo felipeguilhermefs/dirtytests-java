@@ -15,7 +15,6 @@ public class AssignCarrierProcessController {
   }
 
   public <StateType extends State> void changeState(Process process, Task<?, StateType> task, StateType newState, List<String> theWhys) {
-    task.setState(newState);
-    processRepository.save(process, task, theWhys);
+
   }
 }

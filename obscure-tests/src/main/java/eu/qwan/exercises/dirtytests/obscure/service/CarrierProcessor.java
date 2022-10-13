@@ -50,7 +50,8 @@ public class CarrierProcessor {
         .findByDefinitionAndBusinessObject(ProcessDefinition.CARRIER_ASSIGNMENT, transport.getTransportReferenceNumber());
     final Task task = process.getTask(AssignmentTaskDefinition.ASSIGN_CARRIER);
     if (task.isStateChangeAllowed(AssignmentTaskState.NOMINATED)) {
-      controller.changeState(process, task, AssignmentTaskState.NOMINATED, null);
+      task.setState(AssignmentTaskState.NOMINATED);
+      processRepository.save(process, task);
     } else {
       LOG.info("State change not allowed from state:" + task.getState().getName() + " to state:"
                       + taskState.getName());

@@ -10,5 +10,5 @@ import java.util.List;
 public interface ProcessRepository {
   Process findByDefinitionAndBusinessObject(ProcessDefinition definition, String businessObject);
 
-  void save(Process process, Task<?, ? extends State> task, List<String> theWhys);
+  void save(Process process, Task<?, ? extends State> task);
 }
