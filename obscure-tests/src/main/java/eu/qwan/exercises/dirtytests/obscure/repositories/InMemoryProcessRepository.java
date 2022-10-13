@@ -21,7 +21,7 @@ public class InMemoryProcessRepository implements ProcessRepository {
     }
 
     @Override
-    public void save(Process process, Task<?, ? extends State> task, List<String> theWhys) {
+    public void save(Process process, Task<?, ? extends State> task) {
         processes.put(process.getBusinessObject(), process);
     }
 }
