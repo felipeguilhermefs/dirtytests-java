@@ -6,6 +6,7 @@ import eu.qwan.exercises.dirtytests.obscure.domain.TransportOrganisation;
 import eu.qwan.exercises.dirtytests.obscure.notifications.NotificationPublisher;
 import eu.qwan.exercises.dirtytests.obscure.process.*;
 import eu.qwan.exercises.dirtytests.obscure.process.Process;
+import eu.qwan.exercises.dirtytests.obscure.repositories.InMemoryOrganisationRepository;
 import eu.qwan.exercises.dirtytests.obscure.repositories.InMemoryProcessRepository;
 import eu.qwan.exercises.dirtytests.obscure.repositories.InMemoryTransportRepository;
 import eu.qwan.exercises.dirtytests.obscure.repositories.OrganisationRepository;
@@ -33,7 +34,8 @@ public class CarrierProcessorTest {
 
   private final ProcessRepository processRepository = new InMemoryProcessRepository();
   private final TransportRepository transportRepository = new InMemoryTransportRepository();
-  private final CarrierUpdater carrierUpdater = new CarrierUpdater(transportRepository, mock(OrganisationRepository.class));
+  private final OrganisationRepository organisationRepository = new InMemoryOrganisationRepository();
+  private final CarrierUpdater carrierUpdater = new CarrierUpdater(transportRepository, organisationRepository);
   private final CarrierProcessor carrierProcessor = new CarrierProcessor(
       transportRepository,
       processRepository,
