@@ -48,8 +48,8 @@ public class CarrierProcessorTest {
     var transport = new Transport(organisation, "TRN", organisation);
     transportRepository.save(transport);
 
-    assignmentCarrierTask = mock(AssignmentCarrierTask.class);
-    when(assignmentCarrierTask.getState()).thenReturn(AssignmentTaskState.NOMINATED);
+    assignmentCarrierTask = new AssignmentCarrierTask();
+    assignmentCarrierTask.setState(AssignmentTaskState.INITIAL);
 
     var process = new Process("TRN", Map.of(AssignmentTaskDefinition.ASSIGN_CARRIER, assignmentCarrierTask));
     processRepository.save(process, null, null);
@@ -57,7 +57,7 @@ public class CarrierProcessorTest {
 
   @Test
   public void processCarrier() {
-    initMocks(true);
+    initMocks();
 
     var assignCarrierRequest = new AssignCarrierRequest("TRN", new OrganisationDto("CAR2"));
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
@@ -68,7 +68,7 @@ public class CarrierProcessorTest {
 
   @Test
   public void changeToSameCarrier() {
-    initMocks(true);
+    initMocks();
 
     var assignCarrierRequest = new AssignCarrierRequest("TRN", new OrganisationDto("CAR1"));
 
@@ -79,7 +79,7 @@ public class CarrierProcessorTest {
 
   @Test
   public void changeCarrierToOther() {
-    initMocks(true);
+    initMocks();
 
     var assignCarrierRequest = new AssignCarrierRequest("TRN", new OrganisationDto("CAR2"));
 
@@ -94,7 +94,8 @@ public class CarrierProcessorTest {
 
   @Test
   public void changeCarrierToOtherStateChangeNotAllowed() {
-    initMocks(false);
+    assignmentCarrierTask.setState(AssignmentTaskState.NOMINATED);
+    initMocks();
 
     var assignCarrierRequest = new AssignCarrierRequest("TRN", new OrganisationDto("CAR2"));
 
@@ -103,9 +104,7 @@ public class CarrierProcessorTest {
             changeState(any(Process.class), any(Task.class), any(AssignmentTaskState.class), eq(null));
   }
 
-  private void initMocks(boolean stateChangeAllowed) {
-    when(assignmentCarrierTask.isStateChangeAllowed(any(AssignmentTaskState.class))).thenReturn(stateChangeAllowed);
-
+  private void initMocks() {
     carrierProcessor.setController(assignCarrierProcessController);
     carrierProcessor.setCarrierUpdater(carrierUpdaterMock);
     carrierProcessor.setNotificationPublisher(notificationPublisher);
