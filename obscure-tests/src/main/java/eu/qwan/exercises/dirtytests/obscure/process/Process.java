@@ -10,13 +10,9 @@ import java.util.Map;
  Each task has one or more states.
  */
 public class Process<TaskDefinitionType, StateType extends State> {
-  private ProcessDefinition processDefinition;
-  private String businessObject;
   private final Map<TaskDefinitionType, Task<TaskDefinitionType, StateType>> tasks = new HashMap<>();
 
-  public Process(ProcessDefinition processDefinition, String businessObject, Map<TaskDefinitionType, Task<TaskDefinitionType, StateType>> tasks) {
-    this.processDefinition = processDefinition;
-    this.businessObject = businessObject;
+  public Process(Map<TaskDefinitionType, Task<TaskDefinitionType, StateType>> tasks) {
     this.tasks.putAll(tasks);
   }
 
