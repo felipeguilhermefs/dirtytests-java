@@ -11,7 +11,6 @@ import eu.qwan.exercises.dirtytests.obscure.repositories.ProcessRepository;
 import eu.qwan.exercises.dirtytests.obscure.repositories.TransportRepository;
 import eu.qwan.exercises.dirtytests.obscure.request.AssignCarrierRequest;
 import eu.qwan.exercises.dirtytests.obscure.request.OrganisationDto;
-import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -100,8 +99,7 @@ public class CarrierProcessorTest {
     when(assignmentCarrierTask.isStateChangeAllowed(any(AssignmentTaskState.class))).thenReturn(stateChangeAllowed);
     when(assignmentCarrierTask.getState()).thenReturn(AssignmentTaskState.NOMINATED);
 
-    process = mock(Process.class);
-    when(process.getTask(any(AssignmentTaskDefinition.class))).thenReturn(assignmentCarrierTask);
+    process = new Process(Map.of(AssignmentTaskDefinition.ASSIGN_CARRIER, assignmentCarrierTask));
 
     when(processRepository.findByDefinitionAndBusinessObject(any(ProcessDefinition.class), anyString())).thenReturn(process);
 
