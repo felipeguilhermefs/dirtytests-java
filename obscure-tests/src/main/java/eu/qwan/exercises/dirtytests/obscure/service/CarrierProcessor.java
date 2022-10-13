@@ -16,22 +16,23 @@ import org.slf4j.LoggerFactory;
 public class CarrierProcessor {
   private static final Logger LOG = LoggerFactory.getLogger(CarrierProcessor.class);
 
-  private AssignCarrierProcessController controller;
-  private final ProcessRepository processRepository;
   private final TransportRepository transportRepository;
+  private final ProcessRepository processRepository;
   private final CarrierUpdater carrierUpdater;
-  private NotificationPublisher          notificationPublisher;
+  private final AssignCarrierProcessController controller;
+  private final NotificationPublisher notificationPublisher;
 
   public CarrierProcessor(
       TransportRepository transportRepository,
       ProcessRepository processRepository,
       CarrierUpdater carrierUpdater,
-      AssignCarrierProcessController controller
-  ) {
+      AssignCarrierProcessController controller,
+      NotificationPublisher notificationPublisher) {
     this.transportRepository = transportRepository;
     this.processRepository = processRepository;
     this.carrierUpdater = carrierUpdater;
     this.controller = controller;
+    this.notificationPublisher = notificationPublisher;
   }
 
   public void processAssignCarrierRequest(AssignCarrierRequest assignCarrierRequest) {
@@ -54,9 +55,5 @@ public class CarrierProcessor {
       LOG.info("State change not allowed from state:" + task.getState().getName() + " to state:"
                       + taskState.getName());
     }
-  }
-
-  public void setNotificationPublisher(NotificationPublisher notificationPublisher) {
-    this.notificationPublisher = notificationPublisher;
   }
 }
