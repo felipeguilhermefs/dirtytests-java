@@ -31,13 +31,11 @@ public class CarrierProcessorTest {
   private final TransportRepository transportRepository = new InMemoryTransportRepository();
   private final OrganisationRepository organisationRepository = new InMemoryOrganisationRepository();
   private final CarrierUpdater carrierUpdater = new CarrierUpdater(transportRepository, organisationRepository);
-  private final AssignCarrierProcessController controller = spy(new AssignCarrierProcessController(processRepository));
   private final NotificationPublisher notificationPublisher = mock(NotificationPublisher.class);
   private final CarrierProcessor carrierProcessor = new CarrierProcessor(
       transportRepository,
       processRepository,
       carrierUpdater,
-      controller,
       notificationPublisher
   );
 

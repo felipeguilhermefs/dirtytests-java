@@ -19,19 +19,16 @@ public class CarrierProcessor {
   private final TransportRepository transportRepository;
   private final ProcessRepository processRepository;
   private final CarrierUpdater carrierUpdater;
-  private final AssignCarrierProcessController controller;
   private final NotificationPublisher notificationPublisher;
 
   public CarrierProcessor(
       TransportRepository transportRepository,
       ProcessRepository processRepository,
       CarrierUpdater carrierUpdater,
-      AssignCarrierProcessController controller,
       NotificationPublisher notificationPublisher) {
     this.transportRepository = transportRepository;
     this.processRepository = processRepository;
     this.carrierUpdater = carrierUpdater;
-    this.controller = controller;
     this.notificationPublisher = notificationPublisher;
   }
 
