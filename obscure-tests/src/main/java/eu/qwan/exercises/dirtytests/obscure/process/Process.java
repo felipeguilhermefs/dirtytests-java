@@ -3,6 +3,7 @@ package eu.qwan.exercises.dirtytests.obscure.process;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 /**
  Process represents the whole process a shipment goes through, from leaving the
@@ -12,9 +13,13 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode
 public class Process<TaskDefinitionType, StateType extends State> {
+  @Getter
+  private final String businessObject;
+
   private final Map<TaskDefinitionType, Task<TaskDefinitionType, StateType>> tasks = new HashMap<>();
 
-  public Process(Map<TaskDefinitionType, Task<TaskDefinitionType, StateType>> tasks) {
+  public Process(String businessObject, Map<TaskDefinitionType, Task<TaskDefinitionType, StateType>> tasks) {
+    this.businessObject = businessObject;
     this.tasks.putAll(tasks);
   }
 

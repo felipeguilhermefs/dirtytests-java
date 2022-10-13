@@ -6,6 +6,7 @@ import eu.qwan.exercises.dirtytests.obscure.domain.TransportOrganisation;
 import eu.qwan.exercises.dirtytests.obscure.notifications.NotificationPublisher;
 import eu.qwan.exercises.dirtytests.obscure.process.*;
 import eu.qwan.exercises.dirtytests.obscure.process.Process;
+import eu.qwan.exercises.dirtytests.obscure.repositories.InMemoryProcessRepository;
 import eu.qwan.exercises.dirtytests.obscure.repositories.InMemoryTransportRepository;
 import eu.qwan.exercises.dirtytests.obscure.repositories.ProcessRepository;
 import eu.qwan.exercises.dirtytests.obscure.repositories.TransportRepository;
@@ -25,13 +26,14 @@ import static org.mockito.Mockito.*;
 public class CarrierProcessorTest {
 
   private Task    assignmentCarrierTask;
-  @Mock
-  private ProcessRepository processRepository;
 
   @Mock
   private AssignCarrierProcessController assignCarrierProcessController;
+
+  private final ProcessRepository processRepository = new InMemoryProcessRepository();
   private final TransportRepository transportRepository = new InMemoryTransportRepository();
   private final CarrierProcessor carrierProcessor = new CarrierProcessor(transportRepository);
+
   @Mock
   private CarrierUpdater                 carrierUpdaterMock;
   @Mock
@@ -42,6 +44,12 @@ public class CarrierProcessorTest {
     var organisation = new TransportOrganisation("CAR1", OrganisationType.CARRIER);
     var transport = new Transport(organisation, "TRN", organisation);
     transportRepository.save(transport);
+
+    assignmentCarrierTask = mock(AssignmentCarrierTask.class);
+    when(assignmentCarrierTask.getState()).thenReturn(AssignmentTaskState.NOMINATED);
+
+    var process = new Process("TRN", Map.of(AssignmentTaskDefinition.ASSIGN_CARRIER, assignmentCarrierTask));
+    processRepository.save(process, null, null);
   }
 
   @Test
@@ -52,7 +60,7 @@ public class CarrierProcessorTest {
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
 
     verify(assignCarrierProcessController, times(1)).//
-        changeState(processRepository.findByDefinitionAndBusinessObject(ProcessDefinition.CARRIER_ASSIGNMENT, ""), assignmentCarrierTask, AssignmentTaskState.NOMINATED, null);
+        changeState(processRepository.findByDefinitionAndBusinessObject(ProcessDefinition.CARRIER_ASSIGNMENT, "TRN"), assignmentCarrierTask, AssignmentTaskState.NOMINATED, null);
   }
 
   @Test
@@ -93,13 +101,7 @@ public class CarrierProcessorTest {
   }
 
   private void initMocks(boolean stateChangeAllowed) {
-    assignmentCarrierTask = mock(AssignmentCarrierTask.class);
     when(assignmentCarrierTask.isStateChangeAllowed(any(AssignmentTaskState.class))).thenReturn(stateChangeAllowed);
-    when(assignmentCarrierTask.getState()).thenReturn(AssignmentTaskState.NOMINATED);
-
-    var process = new Process(Map.of(AssignmentTaskDefinition.ASSIGN_CARRIER, assignmentCarrierTask));
-
-    when(processRepository.findByDefinitionAndBusinessObject(any(ProcessDefinition.class), anyString())).thenReturn(process);
 
     carrierProcessor.setController(assignCarrierProcessController);
     carrierProcessor.setProcessRepository(processRepository);
