@@ -9,7 +9,6 @@ import eu.qwan.exercises.dirtytests.obscure.process.Process;
 import eu.qwan.exercises.dirtytests.obscure.repositories.InMemoryOrganisationRepository;
 import eu.qwan.exercises.dirtytests.obscure.repositories.InMemoryProcessRepository;
 import eu.qwan.exercises.dirtytests.obscure.repositories.InMemoryTransportRepository;
-import eu.qwan.exercises.dirtytests.obscure.repositories.OrganisationRepository;
 import eu.qwan.exercises.dirtytests.obscure.repositories.ProcessRepository;
 import eu.qwan.exercises.dirtytests.obscure.repositories.TransportRepository;
 import eu.qwan.exercises.dirtytests.obscure.request.AssignCarrierRequest;
@@ -64,8 +63,7 @@ public class CarrierProcessorTest {
     var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto(ORN_OTHER));
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
 
-    var expectedProcess = processRepository.findByDefinitionAndBusinessObject(ProcessDefinition.CARRIER_ASSIGNMENT, TRN);
-    assertEquals(NOMINATED, expectedProcess.getTask(ASSIGN_CARRIER).getState());
+    processStateIsNow(NOMINATED);
   }
 
   @Test
@@ -76,8 +74,7 @@ public class CarrierProcessorTest {
 
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
 
-    var expectedProcess = processRepository.findByDefinitionAndBusinessObject(ProcessDefinition.CARRIER_ASSIGNMENT, TRN);
-    assertEquals(INITIAL, expectedProcess.getTask(ASSIGN_CARRIER).getState());
+    processStateIsNow(INITIAL);
   }
 
   @Test
@@ -114,8 +111,7 @@ public class CarrierProcessorTest {
 
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
 
-    var expectedProcess = processRepository.findByDefinitionAndBusinessObject(ProcessDefinition.CARRIER_ASSIGNMENT, TRN);
-    assertEquals(NOMINATED, expectedProcess.getTask(ASSIGN_CARRIER).getState());
+    processStateIsNow(NOMINATED);
   }
 
   @Test
@@ -126,8 +122,7 @@ public class CarrierProcessorTest {
 
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
 
-    var expectedProcess = processRepository.findByDefinitionAndBusinessObject(ProcessDefinition.CARRIER_ASSIGNMENT, TRN);
-    assertEquals(ASSIGNED, expectedProcess.getTask(ASSIGN_CARRIER).getState());
+    processStateIsNow(ASSIGNED);
   }
 
   private void setupProcessState(AssignmentTaskState state) {
@@ -136,6 +131,11 @@ public class CarrierProcessorTest {
 
     var process = new Process(TRN, Map.of(ASSIGN_CARRIER, assignmentCarrierTask));
     processRepository.save(process, null);
+  }
+
+  private void processStateIsNow(AssignmentTaskState state) {
+    var expectedProcess = processRepository.findByDefinitionAndBusinessObject(ProcessDefinition.CARRIER_ASSIGNMENT, TRN);
+    assertEquals(state, expectedProcess.getTask(ASSIGN_CARRIER).getState());
   }
 
 }
