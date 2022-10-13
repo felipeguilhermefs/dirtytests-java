@@ -6,6 +6,7 @@ import eu.qwan.exercises.dirtytests.obscure.domain.TransportOrganisation;
 import eu.qwan.exercises.dirtytests.obscure.notifications.NotificationPublisher;
 import eu.qwan.exercises.dirtytests.obscure.process.*;
 import eu.qwan.exercises.dirtytests.obscure.process.Process;
+import eu.qwan.exercises.dirtytests.obscure.repositories.InMemoryTransportRepository;
 import eu.qwan.exercises.dirtytests.obscure.repositories.ProcessRepository;
 import eu.qwan.exercises.dirtytests.obscure.repositories.TransportRepository;
 import eu.qwan.exercises.dirtytests.obscure.request.AssignCarrierRequest;
@@ -41,6 +42,9 @@ public class CarrierProcessorTest {
 
   @BeforeEach
   void setup() {
+    var organisation = new TransportOrganisation("CAR1", OrganisationType.CARRIER);
+    var transport = new Transport(organisation, "TRN", organisation);
+    transportRepository.save(transport);
   }
 
   @Test
@@ -106,30 +110,6 @@ public class CarrierProcessorTest {
     carrierProcessor.setTransportRepository(transportRepository);
     carrierProcessor.setCarrierUpdater(carrierUpdaterMock);
     carrierProcessor.setNotificationPublisher(notificationPublisher);
-  }
-
-  private static class InMemoryTransportRepository implements TransportRepository {
-
-    private final Map<String, Transport> transports;
-
-    public InMemoryTransportRepository() {
-      transports = new HashMap<>();
-
-      var organisation = new TransportOrganisation("CAR1", OrganisationType.CARRIER);
-      var transport = new Transport(organisation, "TRN", organisation);
-
-      transports.put(transport.getTransportReferenceNumber(), transport);
-    }
-
-    @Override
-    public Transport findByTrn(Object trn) {
-      return transports.get((String) trn);
-    }
-
-    @Override
-    public void save(Transport transport) {
-      transports.put(transport.getTransportReferenceNumber(), transport);
-    }
   }
 
 }
