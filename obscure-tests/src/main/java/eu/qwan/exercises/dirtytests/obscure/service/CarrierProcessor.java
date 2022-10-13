@@ -25,11 +25,13 @@ public class CarrierProcessor {
   public CarrierProcessor(
       TransportRepository transportRepository,
       ProcessRepository processRepository,
-      CarrierUpdater carrierUpdater
+      CarrierUpdater carrierUpdater,
+      AssignCarrierProcessController controller
   ) {
     this.transportRepository = transportRepository;
     this.processRepository = processRepository;
     this.carrierUpdater = carrierUpdater;
+    this.controller = controller;
   }
 
   public void processAssignCarrierRequest(AssignCarrierRequest assignCarrierRequest) {
@@ -52,10 +54,6 @@ public class CarrierProcessor {
       LOG.info("State change not allowed from state:" + task.getState().getName() + " to state:"
                       + taskState.getName());
     }
-  }
-
-  public void setController(AssignCarrierProcessController controller) {
-    this.controller = controller;
   }
 
   public void setNotificationPublisher(NotificationPublisher notificationPublisher) {

@@ -33,13 +33,13 @@ public class CarrierProcessorTest {
   private final TransportRepository transportRepository = new InMemoryTransportRepository();
   private final OrganisationRepository organisationRepository = new InMemoryOrganisationRepository();
   private final CarrierUpdater carrierUpdater = new CarrierUpdater(transportRepository, organisationRepository);
-  private final AssignCarrierProcessController assignCarrierProcessController = spy(new AssignCarrierProcessController(processRepository));
+  private final AssignCarrierProcessController controller = spy(new AssignCarrierProcessController(processRepository));
   private final CarrierProcessor carrierProcessor = new CarrierProcessor(
       transportRepository,
       processRepository,
-      carrierUpdater
+      carrierUpdater,
+      controller
   );
-
 
   @Mock
   private NotificationPublisher          notificationPublisher;
@@ -64,7 +64,7 @@ public class CarrierProcessorTest {
     var assignCarrierRequest = new AssignCarrierRequest("TRN", new OrganisationDto("CAR2"));
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
 
-    verify(assignCarrierProcessController, times(1)).//
+    verify(controller, times(1)).//
         changeState(processRepository.findByDefinitionAndBusinessObject(ProcessDefinition.CARRIER_ASSIGNMENT, "TRN"), assignmentCarrierTask, AssignmentTaskState.NOMINATED, null);
   }
 
@@ -75,7 +75,7 @@ public class CarrierProcessorTest {
     var assignCarrierRequest = new AssignCarrierRequest("TRN", new OrganisationDto("CAR1"));
 
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
-    verify(assignCarrierProcessController, times(0)).//
+    verify(controller, times(0)).//
         changeState(any(Process.class), any(Task.class), any(AssignmentTaskState.class), eq(null));
   }
 
@@ -86,7 +86,7 @@ public class CarrierProcessorTest {
     var assignCarrierRequest = new AssignCarrierRequest("TRN", new OrganisationDto("CAR2"));
 
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
-    verify(assignCarrierProcessController, times(1)).//
+    verify(controller, times(1)).//
         changeState(any(Process.class), any(Task.class), any(AssignmentTaskState.class), eq(null));
     verify(notificationPublisher).sendYouHaveBeenAssignedAsCarierNotification(
         transportRepository.findByTrn("TRN"),
@@ -102,12 +102,11 @@ public class CarrierProcessorTest {
     var assignCarrierRequest = new AssignCarrierRequest("TRN", new OrganisationDto("CAR2"));
 
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
-    verify(assignCarrierProcessController, times(0)).//
+    verify(controller, times(0)).//
             changeState(any(Process.class), any(Task.class), any(AssignmentTaskState.class), eq(null));
   }
 
   private void initMocks() {
-    carrierProcessor.setController(assignCarrierProcessController);
     carrierProcessor.setNotificationPublisher(notificationPublisher);
   }
 
