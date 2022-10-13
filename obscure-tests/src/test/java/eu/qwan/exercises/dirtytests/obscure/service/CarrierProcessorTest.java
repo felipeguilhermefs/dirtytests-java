@@ -57,7 +57,6 @@ public class CarrierProcessorTest {
 
   @Test
   public void processCarrier() {
-    initMocks();
 
     var assignCarrierRequest = new AssignCarrierRequest("TRN", new OrganisationDto("CAR2"));
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
@@ -68,7 +67,6 @@ public class CarrierProcessorTest {
 
   @Test
   public void changeToSameCarrier() {
-    initMocks();
 
     var assignCarrierRequest = new AssignCarrierRequest("TRN", new OrganisationDto("CAR1"));
 
@@ -79,7 +77,6 @@ public class CarrierProcessorTest {
 
   @Test
   public void changeCarrierToOther() {
-    initMocks();
 
     var assignCarrierRequest = new AssignCarrierRequest("TRN", new OrganisationDto("CAR2"));
 
@@ -95,16 +92,12 @@ public class CarrierProcessorTest {
   @Test
   public void changeCarrierToOtherStateChangeNotAllowed() {
     assignmentCarrierTask.setState(AssignmentTaskState.NOMINATED);
-    initMocks();
 
     var assignCarrierRequest = new AssignCarrierRequest("TRN", new OrganisationDto("CAR2"));
 
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
     verify(controller, times(0)).//
             changeState(any(Process.class), any(Task.class), any(AssignmentTaskState.class), eq(null));
-  }
-
-  private void initMocks() {
   }
 
 }
