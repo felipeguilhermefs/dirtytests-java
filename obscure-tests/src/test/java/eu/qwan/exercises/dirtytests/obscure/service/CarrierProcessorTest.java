@@ -32,7 +32,10 @@ public class CarrierProcessorTest {
 
   private final ProcessRepository processRepository = new InMemoryProcessRepository();
   private final TransportRepository transportRepository = new InMemoryTransportRepository();
-  private final CarrierProcessor carrierProcessor = new CarrierProcessor(transportRepository);
+  private final CarrierProcessor carrierProcessor = new CarrierProcessor(
+      transportRepository,
+      processRepository
+  );
 
   @Mock
   private CarrierUpdater                 carrierUpdaterMock;
@@ -104,7 +107,6 @@ public class CarrierProcessorTest {
     when(assignmentCarrierTask.isStateChangeAllowed(any(AssignmentTaskState.class))).thenReturn(stateChangeAllowed);
 
     carrierProcessor.setController(assignCarrierProcessController);
-    carrierProcessor.setProcessRepository(processRepository);
     carrierProcessor.setCarrierUpdater(carrierUpdaterMock);
     carrierProcessor.setNotificationPublisher(notificationPublisher);
   }

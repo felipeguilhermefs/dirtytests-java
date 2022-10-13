@@ -17,13 +17,17 @@ public class CarrierProcessor {
   private static final Logger LOG = LoggerFactory.getLogger(CarrierProcessor.class);
 
   private AssignCarrierProcessController controller;
-  private ProcessRepository              processRepository;
-  private TransportRepository            transportRepository;
+  private final ProcessRepository processRepository;
+  private final TransportRepository transportRepository;
   private CarrierUpdater                 carrierUpdater;
   private NotificationPublisher          notificationPublisher;
 
-  public CarrierProcessor(TransportRepository transportRepository) {
+  public CarrierProcessor(
+      TransportRepository transportRepository,
+      ProcessRepository processRepository
+  ) {
     this.transportRepository = transportRepository;
+    this.processRepository = processRepository;
   }
 
   public void processAssignCarrierRequest(AssignCarrierRequest assignCarrierRequest) {
@@ -50,10 +54,6 @@ public class CarrierProcessor {
 
   public void setController(AssignCarrierProcessController controller) {
     this.controller = controller;
-  }
-
-  public void setProcessRepository(ProcessRepository processRepository) {
-    this.processRepository = processRepository;
   }
 
   public void setCarrierUpdater(CarrierUpdater carrierUpdater) {
