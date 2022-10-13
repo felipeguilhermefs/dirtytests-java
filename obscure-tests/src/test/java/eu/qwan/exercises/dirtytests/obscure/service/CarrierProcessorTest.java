@@ -25,6 +25,8 @@ import static org.mockito.Mockito.*;
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class CarrierProcessorTest {
 
+  private static final String TRN = "Some transport reference number";
+
   private Task    assignmentCarrierTask;
 
   private final ProcessRepository processRepository = spy(new InMemoryProcessRepository());
@@ -42,23 +44,23 @@ public class CarrierProcessorTest {
   @BeforeEach
   void setup() {
     var organisation = new TransportOrganisation("CAR1", OrganisationType.CARRIER);
-    var transport = new Transport(organisation, "TRN", organisation);
+    var transport = new Transport(organisation, TRN, organisation);
     transportRepository.save(transport);
 
     assignmentCarrierTask = new AssignmentCarrierTask();
     assignmentCarrierTask.setState(AssignmentTaskState.INITIAL);
 
-    var process = new Process("TRN", Map.of(AssignmentTaskDefinition.ASSIGN_CARRIER, assignmentCarrierTask));
+    var process = new Process(TRN, Map.of(AssignmentTaskDefinition.ASSIGN_CARRIER, assignmentCarrierTask));
     processRepository.save(process, null);
   }
 
   @Test
   public void processCarrier() {
 
-    var assignCarrierRequest = new AssignCarrierRequest("TRN", new OrganisationDto("CAR2"));
+    var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto("CAR2"));
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
 
-    var expectedProcess = processRepository.findByDefinitionAndBusinessObject(ProcessDefinition.CARRIER_ASSIGNMENT, "TRN");
+    var expectedProcess = processRepository.findByDefinitionAndBusinessObject(ProcessDefinition.CARRIER_ASSIGNMENT, TRN);
     //AssignmentTaskState.NOMINATED
     verify(processRepository).save(expectedProcess, assignmentCarrierTask);
   }
@@ -66,7 +68,7 @@ public class CarrierProcessorTest {
   @Test
   public void changeToSameCarrier() {
 
-    var assignCarrierRequest = new AssignCarrierRequest("TRN", new OrganisationDto("CAR1"));
+    var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto("CAR1"));
 
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
     verify(processRepository, never()).save(any(Process.class), any(Task.class));
@@ -75,12 +77,12 @@ public class CarrierProcessorTest {
   @Test
   public void changeCarrierToOther() {
 
-    var assignCarrierRequest = new AssignCarrierRequest("TRN", new OrganisationDto("CAR2"));
+    var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto("CAR2"));
 
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
     verify(processRepository).save(any(Process.class), any(Task.class));
     verify(notificationPublisher).sendYouHaveBeenAssignedAsCarierNotification(
-        transportRepository.findByTrn("TRN"),
+        transportRepository.findByTrn(TRN),
         "CAR2"
     );
   }
@@ -89,7 +91,7 @@ public class CarrierProcessorTest {
   public void changeCarrierToOtherStateChangeNotAllowed() {
     assignmentCarrierTask.setState(AssignmentTaskState.NOMINATED);
 
-    var assignCarrierRequest = new AssignCarrierRequest("TRN", new OrganisationDto("CAR2"));
+    var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto("CAR2"));
 
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
     verify(processRepository, never()).save(any(Process.class), any(Task.class));
