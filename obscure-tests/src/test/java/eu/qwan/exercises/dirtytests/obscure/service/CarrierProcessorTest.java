@@ -25,8 +25,6 @@ import static org.mockito.Mockito.*;
 public class CarrierProcessorTest {
 
   private Task    assignmentCarrierTask;
-  private Process process;
-
   @Mock
   private ProcessRepository processRepository;
 
@@ -54,7 +52,7 @@ public class CarrierProcessorTest {
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
 
     verify(assignCarrierProcessController, times(1)).//
-        changeState(process, assignmentCarrierTask, AssignmentTaskState.NOMINATED, null);
+        changeState(processRepository.findByDefinitionAndBusinessObject(ProcessDefinition.CARRIER_ASSIGNMENT, ""), assignmentCarrierTask, AssignmentTaskState.NOMINATED, null);
   }
 
   @Test
@@ -99,7 +97,7 @@ public class CarrierProcessorTest {
     when(assignmentCarrierTask.isStateChangeAllowed(any(AssignmentTaskState.class))).thenReturn(stateChangeAllowed);
     when(assignmentCarrierTask.getState()).thenReturn(AssignmentTaskState.NOMINATED);
 
-    process = new Process(Map.of(AssignmentTaskDefinition.ASSIGN_CARRIER, assignmentCarrierTask));
+    var process = new Process(Map.of(AssignmentTaskDefinition.ASSIGN_CARRIER, assignmentCarrierTask));
 
     when(processRepository.findByDefinitionAndBusinessObject(any(ProcessDefinition.class), anyString())).thenReturn(process);
 
