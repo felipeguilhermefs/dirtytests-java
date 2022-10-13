@@ -32,8 +32,6 @@ public class CarrierProcessorTest {
 
   private static final String TRN = "Some transport reference number";
 
-  private Task    assignmentCarrierTask;
-
   private final ProcessRepository processRepository = new InMemoryProcessRepository();
   private final TransportRepository transportRepository = new InMemoryTransportRepository();
   private final OrganisationRepository organisationRepository = new InMemoryOrganisationRepository();
@@ -104,7 +102,7 @@ public class CarrierProcessorTest {
   }
 
   private void setupProcessState(AssignmentTaskState state) {
-    assignmentCarrierTask = new AssignmentCarrierTask();
+    var assignmentCarrierTask = new AssignmentCarrierTask();
     assignmentCarrierTask.setState(state);
 
     var process = new Process(TRN, Map.of(ASSIGN_CARRIER, assignmentCarrierTask));
