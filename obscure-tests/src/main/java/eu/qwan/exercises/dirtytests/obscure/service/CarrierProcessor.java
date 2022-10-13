@@ -10,11 +10,12 @@ import eu.qwan.exercises.dirtytests.obscure.repositories.ProcessRepository;
 import eu.qwan.exercises.dirtytests.obscure.process.Task;
 import eu.qwan.exercises.dirtytests.obscure.repositories.TransportRepository;
 import eu.qwan.exercises.dirtytests.obscure.request.AssignCarrierRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Slf4j
 public class CarrierProcessor {
-  private static final Logger LOG = LoggerFactory.getLogger(CarrierProcessor.class);
 
   private final TransportRepository transportRepository;
   private final ProcessRepository processRepository;
@@ -43,14 +44,14 @@ public class CarrierProcessor {
   }
 
   private void updateProcess(Transport transport, AssignmentTaskState taskState) {
-    final Process process = processRepository
+    var process = processRepository
         .findByDefinitionAndBusinessObject(ProcessDefinition.CARRIER_ASSIGNMENT, transport.getTransportReferenceNumber());
-    final Task task = process.getTask(AssignmentTaskDefinition.ASSIGN_CARRIER);
-    if (task.isStateChangeAllowed(AssignmentTaskState.NOMINATED)) {
-      task.setState(AssignmentTaskState.NOMINATED);
+    var task = process.getTask(AssignmentTaskDefinition.ASSIGN_CARRIER);
+    if (task.isStateChangeAllowed(taskState)) {
+      task.setState(taskState);
       processRepository.save(process, task);
     } else {
-      LOG.info("State change not allowed from state:" + task.getState().getName() + " to state:"
+      log.info("State change not allowed from state:" + task.getState().getName() + " to state:"
                       + taskState.getName());
     }
   }
