@@ -8,6 +8,7 @@ import eu.qwan.exercises.dirtytests.obscure.process.*;
 import eu.qwan.exercises.dirtytests.obscure.process.Process;
 import eu.qwan.exercises.dirtytests.obscure.repositories.InMemoryProcessRepository;
 import eu.qwan.exercises.dirtytests.obscure.repositories.InMemoryTransportRepository;
+import eu.qwan.exercises.dirtytests.obscure.repositories.OrganisationRepository;
 import eu.qwan.exercises.dirtytests.obscure.repositories.ProcessRepository;
 import eu.qwan.exercises.dirtytests.obscure.repositories.TransportRepository;
 import eu.qwan.exercises.dirtytests.obscure.request.AssignCarrierRequest;
@@ -37,8 +38,8 @@ public class CarrierProcessorTest {
       processRepository
   );
 
-  @Mock
-  private CarrierUpdater                 carrierUpdaterMock;
+  private final CarrierUpdater carrierUpdater = new CarrierUpdater(transportRepository, mock(OrganisationRepository.class));
+
   @Mock
   private NotificationPublisher          notificationPublisher;
 
@@ -106,7 +107,7 @@ public class CarrierProcessorTest {
 
   private void initMocks() {
     carrierProcessor.setController(assignCarrierProcessController);
-    carrierProcessor.setCarrierUpdater(carrierUpdaterMock);
+    carrierProcessor.setCarrierUpdater(carrierUpdater);
     carrierProcessor.setNotificationPublisher(notificationPublisher);
   }
 
