@@ -16,17 +16,15 @@ import eu.qwan.exercises.dirtytests.obscure.request.OrganisationDto;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 import static eu.qwan.exercises.dirtytests.obscure.process.AssignmentTaskDefinition.ASSIGN_CARRIER;
 import static eu.qwan.exercises.dirtytests.obscure.process.AssignmentTaskState.ASSIGNED;
 import static eu.qwan.exercises.dirtytests.obscure.process.AssignmentTaskState.INITIAL;
 import static eu.qwan.exercises.dirtytests.obscure.process.AssignmentTaskState.NOMINATED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
-@MockitoSettings(strictness = Strictness.LENIENT)
 public class CarrierProcessorTest {
 
   private static final String TRN = "Some transport reference number";
@@ -97,8 +95,9 @@ public class CarrierProcessorTest {
 
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
 
+    var expectedTransport = transportRepository.findByTrn(TRN);
     verify(notificationPublisher).sendYouHaveBeenAssignedAsCarierNotification(
-        transportRepository.findByTrn(TRN),
+        expectedTransport,
         ORN_OTHER
     );
   }
