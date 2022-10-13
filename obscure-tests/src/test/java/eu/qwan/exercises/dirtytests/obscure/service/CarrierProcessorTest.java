@@ -29,11 +29,6 @@ public class CarrierProcessorTest {
   private ProcessRepository processRepository;
 
   private CarrierProcessor carrierProcessor = new CarrierProcessor();
-  private Transport transport = new Transport(
-      new TransportOrganisation("CAR1", OrganisationType.CARRIER),
-      "TRN",
-      new TransportOrganisation("CAR1", OrganisationType.CARRIER)
-  );
   @Mock
   private AssignCarrierProcessController assignCarrierProcessController;
   private final TransportRepository transportRepository = new InMemoryTransportRepository();
@@ -77,8 +72,10 @@ public class CarrierProcessorTest {
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
     verify(assignCarrierProcessController, times(1)).//
         changeState(any(Process.class), any(Task.class), any(AssignmentTaskState.class), eq(null));
-    verify(notificationPublisher, times(1)).//
-        sendYouHaveBeenAssignedAsCarierNotification(transport, "CAR2");
+    verify(notificationPublisher).sendYouHaveBeenAssignedAsCarierNotification(
+        transportRepository.findByTrn(null),
+        "CAR2"
+    );
   }
 
   @Test
