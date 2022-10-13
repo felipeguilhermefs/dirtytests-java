@@ -17,7 +17,6 @@ import eu.qwan.exercises.dirtytests.obscure.request.OrganisationDto;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
@@ -34,15 +33,14 @@ public class CarrierProcessorTest {
   private final OrganisationRepository organisationRepository = new InMemoryOrganisationRepository();
   private final CarrierUpdater carrierUpdater = new CarrierUpdater(transportRepository, organisationRepository);
   private final AssignCarrierProcessController controller = spy(new AssignCarrierProcessController(processRepository));
+  private final NotificationPublisher notificationPublisher = mock(NotificationPublisher.class);
   private final CarrierProcessor carrierProcessor = new CarrierProcessor(
       transportRepository,
       processRepository,
       carrierUpdater,
-      controller
+      controller,
+      notificationPublisher
   );
-
-  @Mock
-  private NotificationPublisher          notificationPublisher;
 
   @BeforeEach
   void setup() {
@@ -107,7 +105,6 @@ public class CarrierProcessorTest {
   }
 
   private void initMocks() {
-    carrierProcessor.setNotificationPublisher(notificationPublisher);
   }
 
 }
