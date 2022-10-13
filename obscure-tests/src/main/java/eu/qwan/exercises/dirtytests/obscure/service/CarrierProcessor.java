@@ -22,6 +22,10 @@ public class CarrierProcessor {
   private CarrierUpdater                 carrierUpdater;
   private NotificationPublisher          notificationPublisher;
 
+  public CarrierProcessor(TransportRepository transportRepository) {
+    this.transportRepository = transportRepository;
+  }
+
   public void processAssignCarrierRequest(AssignCarrierRequest assignCarrierRequest) {
     Transport transport = transportRepository.findByTrn(assignCarrierRequest.getTrn());
     boolean carrierUpdated = !transport.getCarrier().getOrganisationReferenceNumber().equals(assignCarrierRequest.getCarrier().getOrn());
@@ -50,10 +54,6 @@ public class CarrierProcessor {
 
   public void setProcessRepository(ProcessRepository processRepository) {
     this.processRepository = processRepository;
-  }
-
-  public void setTransportRepository(TransportRepository transportRepository) {
-    this.transportRepository = transportRepository;
   }
 
   public void setCarrierUpdater(CarrierUpdater carrierUpdater) {
