@@ -20,6 +20,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import static eu.qwan.exercises.dirtytests.obscure.process.AssignmentTaskState.INITIAL;
+import static eu.qwan.exercises.dirtytests.obscure.process.AssignmentTaskState.NOMINATED;
 import static org.mockito.Mockito.*;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -46,16 +48,11 @@ public class CarrierProcessorTest {
     var organisation = new TransportOrganisation("CAR1", OrganisationType.CARRIER);
     var transport = new Transport(organisation, TRN, organisation);
     transportRepository.save(transport);
-
-    assignmentCarrierTask = new AssignmentCarrierTask();
-    assignmentCarrierTask.setState(AssignmentTaskState.INITIAL);
-
-    var process = new Process(TRN, Map.of(AssignmentTaskDefinition.ASSIGN_CARRIER, assignmentCarrierTask));
-    processRepository.save(process, null);
   }
 
   @Test
   public void processCarrier() {
+    setupProcessState(INITIAL);
 
     var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto("CAR2"));
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
@@ -67,6 +64,7 @@ public class CarrierProcessorTest {
 
   @Test
   public void changeToSameCarrier() {
+    setupProcessState(INITIAL);
 
     var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto("CAR1"));
 
@@ -76,6 +74,7 @@ public class CarrierProcessorTest {
 
   @Test
   public void changeCarrierToOther() {
+    setupProcessState(INITIAL);
 
     var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto("CAR2"));
 
@@ -89,12 +88,20 @@ public class CarrierProcessorTest {
 
   @Test
   public void changeCarrierToOtherStateChangeNotAllowed() {
-    assignmentCarrierTask.setState(AssignmentTaskState.NOMINATED);
+    setupProcessState(NOMINATED);
 
     var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto("CAR2"));
 
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
     verify(processRepository, never()).save(any(Process.class), any(Task.class));
+  }
+
+  private void setupProcessState(AssignmentTaskState state) {
+    assignmentCarrierTask = new AssignmentCarrierTask();
+    assignmentCarrierTask.setState(state);
+
+    var process = new Process(TRN, Map.of(AssignmentTaskDefinition.ASSIGN_CARRIER, assignmentCarrierTask));
+    processRepository.save(process, null);
   }
 
 }
