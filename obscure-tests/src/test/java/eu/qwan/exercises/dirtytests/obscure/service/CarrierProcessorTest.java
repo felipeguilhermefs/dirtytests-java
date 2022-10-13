@@ -10,6 +10,8 @@ import eu.qwan.exercises.dirtytests.obscure.repositories.ProcessRepository;
 import eu.qwan.exercises.dirtytests.obscure.repositories.TransportRepository;
 import eu.qwan.exercises.dirtytests.obscure.request.AssignCarrierRequest;
 import eu.qwan.exercises.dirtytests.obscure.request.OrganisationDto;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -73,7 +75,7 @@ public class CarrierProcessorTest {
     verify(assignCarrierProcessController, times(1)).//
         changeState(any(Process.class), any(Task.class), any(AssignmentTaskState.class), eq(null));
     verify(notificationPublisher).sendYouHaveBeenAssignedAsCarierNotification(
-        transportRepository.findByTrn(null),
+        transportRepository.findByTrn("TRN"),
         "CAR2"
     );
   }
@@ -108,15 +110,25 @@ public class CarrierProcessorTest {
 
   private static class InMemoryTransportRepository implements TransportRepository {
 
-    @Override
-    public Transport findByTrn(Object any) {
+    private final Map<String, Transport> transports;
+
+    public InMemoryTransportRepository() {
+      transports = new HashMap<>();
+
       var organisation = new TransportOrganisation("CAR1", OrganisationType.CARRIER);
-      return new Transport(organisation, "TRN", organisation);
+      var transport = new Transport(organisation, "TRN", organisation);
+
+      transports.put(transport.getTransportReferenceNumber(), transport);
+    }
+
+    @Override
+    public Transport findByTrn(Object trn) {
+      return transports.get((String) trn);
     }
 
     @Override
     public void save(Transport transport) {
-
+      transports.put(transport.getTransportReferenceNumber(), transport);
     }
   }
 
