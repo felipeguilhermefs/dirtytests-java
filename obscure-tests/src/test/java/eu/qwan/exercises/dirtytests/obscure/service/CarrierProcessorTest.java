@@ -29,7 +29,6 @@ public class CarrierProcessorTest {
   private ProcessRepository processRepository;
 
   private CarrierProcessor carrierProcessor = new CarrierProcessor();
-  private TransportOrganisation transportOrganisation = new TransportOrganisation("CAR1", OrganisationType.CARRIER);
   private Transport                      transport;
   @Mock
   private AssignCarrierProcessController assignCarrierProcessController;
@@ -98,6 +97,7 @@ public class CarrierProcessorTest {
 
     when(processRepository.findByDefinitionAndBusinessObject(any(ProcessDefinition.class), anyString())).thenReturn(process);
 
+    var transportOrganisation = new TransportOrganisation("CAR1", OrganisationType.CARRIER);
     transport = new Transport();
     transport.setOwner(transportOrganisation);
     transport.setCarrier(transportOrganisation);
