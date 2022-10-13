@@ -31,6 +31,8 @@ import static org.mockito.Mockito.*;
 public class CarrierProcessorTest {
 
   private static final String TRN = "Some transport reference number";
+  private static final String ORN_PRIME = "Some organisation reference number";
+  private static final String ORN_OTHER = "Other organisation reference number";
 
   private final ProcessRepository processRepository = new InMemoryProcessRepository();
   private final TransportRepository transportRepository = new InMemoryTransportRepository();
@@ -46,10 +48,10 @@ public class CarrierProcessorTest {
 
   @BeforeEach
   void setup() {
-    var primeOrganisation = new TransportOrganisation("CAR1", OrganisationType.CARRIER);
-    organisationRepository.save("CAR1", primeOrganisation);
-    var otherOrganisation = new TransportOrganisation("CAR2", OrganisationType.CARRIER);
-    organisationRepository.save("CAR2", otherOrganisation);
+    var primeOrganisation = new TransportOrganisation(ORN_PRIME, OrganisationType.CARRIER);
+    organisationRepository.save(ORN_PRIME, primeOrganisation);
+    var otherOrganisation = new TransportOrganisation(ORN_OTHER, OrganisationType.CARRIER);
+    organisationRepository.save(ORN_OTHER, otherOrganisation);
 
     var transport = new Transport(primeOrganisation, TRN, primeOrganisation);
     transportRepository.save(transport);
@@ -59,7 +61,7 @@ public class CarrierProcessorTest {
   public void processCarrier() {
     setupProcessState(INITIAL);
 
-    var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto("CAR2"));
+    var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto(ORN_OTHER));
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
 
     var expectedProcess = processRepository.findByDefinitionAndBusinessObject(ProcessDefinition.CARRIER_ASSIGNMENT, TRN);
@@ -70,7 +72,7 @@ public class CarrierProcessorTest {
   public void changeToSameCarrier() {
     setupProcessState(INITIAL);
 
-    var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto("CAR1"));
+    var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto(ORN_PRIME));
 
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
 
@@ -82,25 +84,25 @@ public class CarrierProcessorTest {
   public void changeCarrierToOtherOrganisation() {
     setupProcessState(INITIAL);
 
-    var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto("CAR2"));
+    var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto(ORN_OTHER));
 
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
 
     var expectedTransport = transportRepository.findByTrn(TRN);
-    assertEquals("CAR2", expectedTransport.getCarrier().getOrganisationReferenceNumber());
+    assertEquals(ORN_OTHER, expectedTransport.getCarrier().getOrganisationReferenceNumber());
   }
 
   @Test
   public void sendsNotificationWhenChangingCarrierToOtherOrganisation() {
     setupProcessState(INITIAL);
 
-    var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto("CAR2"));
+    var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto(ORN_OTHER));
 
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
 
     verify(notificationPublisher).sendYouHaveBeenAssignedAsCarierNotification(
         transportRepository.findByTrn(TRN),
-        "CAR2"
+        ORN_OTHER
     );
   }
 
@@ -108,7 +110,7 @@ public class CarrierProcessorTest {
   public void changeCarrierToOtherOrganisationNominatesProcess() {
     setupProcessState(INITIAL);
 
-    var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto("CAR2"));
+    var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto(ORN_OTHER));
 
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
 
@@ -120,7 +122,7 @@ public class CarrierProcessorTest {
   public void changeFromAssignedToNominatedNotAllowed() {
     setupProcessState(ASSIGNED);
 
-    var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto("CAR2"));
+    var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto(ORN_OTHER));
 
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
 
