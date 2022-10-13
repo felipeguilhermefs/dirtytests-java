@@ -36,8 +36,7 @@ public class CarrierProcessorTest {
   );
   @Mock
   private AssignCarrierProcessController assignCarrierProcessController;
-  @Mock
-  private TransportRepository            transportRepository;
+  private final TransportRepository transportRepository = new InMemoryTransportRepository();
   @Mock
   private CarrierUpdater                 carrierUpdaterMock;
   @Mock
@@ -101,13 +100,25 @@ public class CarrierProcessorTest {
 
     when(processRepository.findByDefinitionAndBusinessObject(any(ProcessDefinition.class), anyString())).thenReturn(process);
 
-    when(transportRepository.findByTrn(any())).thenReturn(transport);
-
     carrierProcessor.setController(assignCarrierProcessController);
     carrierProcessor.setProcessRepository(processRepository);
     carrierProcessor.setTransportRepository(transportRepository);
     carrierProcessor.setCarrierUpdater(carrierUpdaterMock);
     carrierProcessor.setNotificationPublisher(notificationPublisher);
+  }
+
+  private static class InMemoryTransportRepository implements TransportRepository {
+
+    @Override
+    public Transport findByTrn(Object any) {
+      var organisation = new TransportOrganisation("CAR1", OrganisationType.CARRIER);
+      return new Transport(organisation, "TRN", organisation);
+    }
+
+    @Override
+    public void save(Transport transport) {
+
+    }
   }
 
 }
