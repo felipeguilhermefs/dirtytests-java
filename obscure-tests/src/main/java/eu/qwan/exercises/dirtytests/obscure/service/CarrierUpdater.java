@@ -8,8 +8,8 @@ import eu.qwan.exercises.dirtytests.obscure.request.AssignCarrierRequest;
 import eu.qwan.exercises.dirtytests.obscure.request.OrganisationDto;
 
 public class CarrierUpdater {
-  private TransportRepository transportRepository;
-  private OrganisationRepository organisationRepository;
+  private final TransportRepository transportRepository;
+  private final OrganisationRepository organisationRepository;
 
   public CarrierUpdater(TransportRepository transportRepository, OrganisationRepository organisationRepository) {
     this.transportRepository = transportRepository;
@@ -17,8 +17,8 @@ public class CarrierUpdater {
   }
 
   public void updateCarrier(Transport transport, AssignCarrierRequest assignCarrierRequest) {
-    OrganisationDto carrierDto = assignCarrierRequest.getCarrier();
-    TransportOrganisation carrier = organisationRepository.findByOrn(carrierDto.getOrn());
+    var carrierDto = assignCarrierRequest.getCarrier();
+    var carrier = organisationRepository.findByOrn(carrierDto.getOrn());
     transport.setCarrier(carrier);
     transportRepository.save(transport);
   }
