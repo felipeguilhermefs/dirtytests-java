@@ -29,13 +29,11 @@ public class CarrierProcessorTest {
 
   private Task    assignmentCarrierTask;
 
-  @Mock
-  private AssignCarrierProcessController assignCarrierProcessController;
-
   private final ProcessRepository processRepository = new InMemoryProcessRepository();
   private final TransportRepository transportRepository = new InMemoryTransportRepository();
   private final OrganisationRepository organisationRepository = new InMemoryOrganisationRepository();
   private final CarrierUpdater carrierUpdater = new CarrierUpdater(transportRepository, organisationRepository);
+  private final AssignCarrierProcessController assignCarrierProcessController = spy(new AssignCarrierProcessController(processRepository));
   private final CarrierProcessor carrierProcessor = new CarrierProcessor(
       transportRepository,
       processRepository,
