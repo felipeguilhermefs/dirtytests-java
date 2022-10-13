@@ -55,21 +55,10 @@ public class CarrierProcessorTest {
   }
 
   @Test
-  public void processCarrier() {
-    setupProcessState(INITIAL);
-
-    var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto(ORN_OTHER));
-    carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
-
-    processStateIsNow(NOMINATED);
-  }
-
-  @Test
   public void changeToSameCarrier() {
     setupProcessState(INITIAL);
 
     var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto(ORN_PRIME));
-
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
 
     processStateIsNow(INITIAL);
@@ -80,7 +69,6 @@ public class CarrierProcessorTest {
     setupProcessState(INITIAL);
 
     var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto(ORN_OTHER));
-
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
 
     var expectedTransport = transportRepository.findByTrn(TRN);
@@ -92,7 +80,6 @@ public class CarrierProcessorTest {
     setupProcessState(INITIAL);
 
     var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto(ORN_OTHER));
-
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
 
     var expectedTransport = transportRepository.findByTrn(TRN);
@@ -107,7 +94,6 @@ public class CarrierProcessorTest {
     setupProcessState(INITIAL);
 
     var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto(ORN_OTHER));
-
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
 
     processStateIsNow(NOMINATED);
@@ -118,7 +104,6 @@ public class CarrierProcessorTest {
     setupProcessState(ASSIGNED);
 
     var assignCarrierRequest = new AssignCarrierRequest(TRN, new OrganisationDto(ORN_OTHER));
-
     carrierProcessor.processAssignCarrierRequest(assignCarrierRequest);
 
     processStateIsNow(ASSIGNED);
