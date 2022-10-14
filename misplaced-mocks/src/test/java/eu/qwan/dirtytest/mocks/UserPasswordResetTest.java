@@ -15,10 +15,10 @@ public class UserPasswordResetTest {
     InMemoryUserRepository userRepository = spy(new InMemoryUserRepository());
     Email email = mock(Email.class);
     Mailer mailer = mock(Mailer.class);
-    User user = new User("user-id", "user@company.com");
 
     @BeforeEach
     void setup() {
+        var user = new User("user-id", "user@company.com");
         userRepository.add(user);
     }
 
