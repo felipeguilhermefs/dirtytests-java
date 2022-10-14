@@ -52,7 +52,12 @@ public class UserPasswordResetTest {
     public void userNotFound() throws Exception {
         ctrl.resetPassword("not-user");
 
-        verify(mailer).send(any(), any(), any(), any());
+        verify(mailer).send(
+            eq("servicedesk@qwan.eu"),
+            eq("info@qwan.eu"),
+            eq("Problem notification"),
+            eq("User servicedesk@qwan.eu wants to reset his/her password, but sending the email failed")
+        );
         verify(emailFactory).create(any(), any(), any());
     }
 
