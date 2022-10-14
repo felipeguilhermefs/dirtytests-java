@@ -39,8 +39,10 @@ public class UserPasswordResetTest {
     @Test
     public void testNotificationFails() throws Exception {
         doThrow(new SendEmailFailed(new RuntimeException()))
-            .doNothing()
-            .when(mailer).send(any(), any(), any(), any());
+            .when(mailer).send(eq("user@company.com"), any(), any(), any());
+
+        doNothing()
+            .when(mailer).send(eq("servicedesk@qwan.eu"), any(), any(), any());
 
         ctrl.resetPassword(EXISTING_USER);
 
