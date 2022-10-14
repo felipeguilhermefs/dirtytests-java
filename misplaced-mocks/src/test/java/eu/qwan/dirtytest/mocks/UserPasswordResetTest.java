@@ -13,7 +13,7 @@ public class UserPasswordResetTest {
 
     static final String EXISTING_USER = "existing-user";
 
-    EmailFactory emailFactory = mock(EmailFactory.class);
+    EmailFactory emailFactory = spy(new EmailFactory());
     InMemoryUserRepository userRepository = new InMemoryUserRepository();
     Email userEmail = new Email("", "user@company.com", "", "");
     Email sdEmail = new Email("", "servicedesk@qwan.eu", "", "");
@@ -28,9 +28,6 @@ public class UserPasswordResetTest {
 
     @Test
     public void sendNotification() throws Exception {
-        when(emailFactory.create(eq("user@company.com"), eq("PASSWORD_RESET"), any())).thenReturn(
-            userEmail);
-
         ctrl.resetPassword(EXISTING_USER);
 
         verify(mailer).send(any(), any(), any(), any());
@@ -39,13 +36,9 @@ public class UserPasswordResetTest {
 
     @Test
     public void testNotificationFails() throws Exception {
-        when(emailFactory.create(eq("user@company.com"), eq("PASSWORD_RESET"), any())).thenReturn(
-            userEmail);
         doThrow(new SendEmailFailed(new RuntimeException()))
             .doNothing()
             .when(mailer).send(any(), any(), any(), any());
-        when(emailFactory.create("servicedesk@qwan.eu", "SD", null))
-            .thenReturn(sdEmail);
 
         ctrl.resetPassword(EXISTING_USER);
 
@@ -55,8 +48,6 @@ public class UserPasswordResetTest {
 
     @Test
     public void userNotFound() throws Exception {
-        when(emailFactory.create("servicedesk@qwan.eu", "SD", null)).thenReturn(userEmail);
-
         ctrl.resetPassword("not-user");
 
         verify(mailer).send(any(), any(), any(), any());
