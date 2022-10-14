@@ -13,7 +13,7 @@ public class UserPasswordResetTest {
 
     static final String EXISTING_USER = "existing-user";
 
-    EmailFactory emailFactory = spy(new EmailFactory());
+    EmailFactory emailFactory = new EmailFactory();
     InMemoryUserRepository userRepository = new InMemoryUserRepository();
     Mailer mailer = mock(Mailer.class);
     PasswordResetController ctrl = new PasswordResetController(emailFactory, userRepository, mailer);
@@ -33,7 +33,6 @@ public class UserPasswordResetTest {
             eq("info@qwan.eu"),
             eq("Password reset"),
             contains("Please click this link to reset your password: "));
-        verify(emailFactory).create(any(), any(), any());
     }
 
     @Test
@@ -47,7 +46,6 @@ public class UserPasswordResetTest {
         ctrl.resetPassword(EXISTING_USER);
 
         verify(mailer, times(2)).send(any(), any(), any(), any());
-        verify(emailFactory, times(2)).create(any(), any(), any());
     }
 
     @Test
@@ -60,7 +58,6 @@ public class UserPasswordResetTest {
             eq("Problem notification"),
             eq("User servicedesk@qwan.eu wants to reset his/her password, but sending the email failed")
         );
-        verify(emailFactory).create(any(), any(), any());
     }
 
     static class InMemoryUserRepository implements UserRepository {
