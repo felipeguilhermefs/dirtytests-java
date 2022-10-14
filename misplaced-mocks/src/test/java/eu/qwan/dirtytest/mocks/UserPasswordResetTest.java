@@ -11,6 +11,8 @@ import static org.mockito.Mockito.*;
 
 public class UserPasswordResetTest {
 
+    static final String EXISTING_USER = "existing-user";
+
     EmailFactory emailFactory = mock(EmailFactory.class);
     InMemoryUserRepository userRepository = new InMemoryUserRepository();
     Email email = mock(Email.class);
@@ -19,7 +21,7 @@ public class UserPasswordResetTest {
 
     @BeforeEach
     void setup() {
-        var user = new User("user-id", "user@company.com");
+        var user = new User(EXISTING_USER, "user@company.com");
         userRepository.add(user);
     }
 
@@ -27,7 +29,8 @@ public class UserPasswordResetTest {
     public void sendNotification() {
         when(emailFactory.create(eq("user@company.com"), eq("PASSWORD_RESET"), any())).thenReturn(email);
         when(email.send(mailer)).thenReturn(true);
-        ctrl.resetPassword("user-id");
+
+        ctrl.resetPassword(EXISTING_USER);
 
         verify(email).send(any());
         verify(emailFactory).create(any(), any(), any());
@@ -40,7 +43,7 @@ public class UserPasswordResetTest {
         Email email2 = mock(Email.class);
         when(email2.send(mailer)).thenReturn(true);
         when(emailFactory.create("servicedesk@qwan.eu", "SD", null)).thenReturn(email2);
-        ctrl.resetPassword("user-id");
+        ctrl.resetPassword(EXISTING_USER);
 
         verify(email).send(any());
         verify(email2).send(any());
@@ -51,7 +54,8 @@ public class UserPasswordResetTest {
     public void userNotFound() {
         when(email.send(mailer)).thenReturn(false);
         when(emailFactory.create("servicedesk@qwan.eu", "SD", null)).thenReturn(email);
-        ctrl.resetPassword("user-id2");
+
+        ctrl.resetPassword("not-user");
 
         verify(email).send(any());
         verify(emailFactory).create(any(), any(), any());
