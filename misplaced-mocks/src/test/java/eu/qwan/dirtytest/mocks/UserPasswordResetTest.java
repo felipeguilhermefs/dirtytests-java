@@ -15,8 +15,6 @@ public class UserPasswordResetTest {
 
     EmailFactory emailFactory = spy(new EmailFactory());
     InMemoryUserRepository userRepository = new InMemoryUserRepository();
-    Email userEmail = new Email("", "user@company.com", "", "");
-    Email sdEmail = new Email("", "servicedesk@qwan.eu", "", "");
     Mailer mailer = mock(Mailer.class);
     PasswordResetController ctrl = new PasswordResetController(emailFactory, userRepository, mailer);
 
