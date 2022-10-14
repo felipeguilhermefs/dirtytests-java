@@ -15,6 +15,7 @@ public class UserPasswordResetTest {
     InMemoryUserRepository userRepository = new InMemoryUserRepository();
     Email email = mock(Email.class);
     Mailer mailer = mock(Mailer.class);
+    PasswordResetController ctrl = new PasswordResetController(emailFactory, userRepository, mailer);
 
     @BeforeEach
     void setup() {
@@ -26,7 +27,6 @@ public class UserPasswordResetTest {
     public void sendNotification() {
         when(emailFactory.create(eq("user@company.com"), eq("PASSWORD_RESET"), any())).thenReturn(email);
         when(email.send(mailer)).thenReturn(true);
-        PasswordResetController ctrl = new PasswordResetController(emailFactory, userRepository, mailer);
         ctrl.resetPassword("user-id");
 
         verify(email).send(any());
@@ -40,7 +40,6 @@ public class UserPasswordResetTest {
         Email email2 = mock(Email.class);
         when(email2.send(mailer)).thenReturn(true);
         when(emailFactory.create("servicedesk@qwan.eu", "SD", null)).thenReturn(email2);
-        PasswordResetController ctrl = new PasswordResetController(emailFactory, userRepository, mailer);
         ctrl.resetPassword("user-id");
 
         verify(email).send(any());
@@ -52,7 +51,6 @@ public class UserPasswordResetTest {
     public void userNotFound() {
         when(email.send(mailer)).thenReturn(false);
         when(emailFactory.create("servicedesk@qwan.eu", "SD", null)).thenReturn(email);
-        PasswordResetController ctrl = new PasswordResetController(emailFactory, userRepository, mailer);
         ctrl.resetPassword("user-id2");
 
         verify(email).send(any());
