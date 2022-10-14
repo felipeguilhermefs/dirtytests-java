@@ -2,7 +2,6 @@ package eu.qwan.dirtytest.mocks;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -14,15 +13,11 @@ public class UserPasswordResetTest {
     static final String EXISTING_USER = "existing-user";
 
     EmailFactory emailFactory = new EmailFactory();
-    InMemoryUserRepository userRepository = new InMemoryUserRepository();
+    InMemoryUserRepository userRepository = new InMemoryUserRepository(
+        new User(EXISTING_USER, "user@company.com")
+    );
     Mailer mailer = mock(Mailer.class);
     PasswordResetController ctrl = new PasswordResetController(emailFactory, userRepository, mailer);
-
-    @BeforeEach
-    void setup() {
-        var user = new User(EXISTING_USER, "user@company.com");
-        userRepository.add(user);
-    }
 
     @Test
     public void sendNotification() throws Exception {
@@ -64,13 +59,13 @@ public class UserPasswordResetTest {
 
         Map<String, User> users = new HashMap<>();
 
+        public InMemoryUserRepository(User user) {
+            users.put(user.getId(), user);
+        }
+
         @Override
         public Optional<User> byId(String id) {
             return Optional.ofNullable(users.get(id));
-        }
-
-        public void add(User user) {
-            users.put(user.getId(), user);
         }
     }
 }
