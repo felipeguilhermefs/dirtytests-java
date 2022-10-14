@@ -28,7 +28,11 @@ public class UserPasswordResetTest {
     public void sendNotification() throws Exception {
         ctrl.resetPassword(EXISTING_USER);
 
-        verify(mailer).send(any(), any(), any(), any());
+        verify(mailer).send(
+            eq("user@company.com"),
+            eq("info@qwan.eu"),
+            eq("Password reset"),
+            contains("Please click this link to reset your password: "));
         verify(emailFactory).create(any(), any(), any());
     }
 
