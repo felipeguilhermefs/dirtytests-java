@@ -7,9 +7,11 @@ import java.util.Optional;
 import static org.mockito.Mockito.*;
 
 public class UserPasswordResetTest {
+
+    EmailFactory emailFactory = mock(EmailFactory.class);
+
     @Test
     public void sendNotification() {
-        EmailFactory emailFactory = mock(EmailFactory.class);
         Email email = mock(Email.class);
         Mailer mailer = mock(Mailer.class);
         UserRepository userRepository = mock(UserRepository.class);
@@ -28,7 +30,6 @@ public class UserPasswordResetTest {
 
     @Test
     public void testNotificationFails() {
-        EmailFactory emailFactory = mock(EmailFactory.class);
         Email email = mock(Email.class);
         Mailer mailer = mock(Mailer.class);
         UserRepository userRepository = mock(UserRepository.class);
@@ -50,7 +51,6 @@ public class UserPasswordResetTest {
     }
     @Test
     public void userNotFound() {
-        EmailFactory emailFactory = mock(EmailFactory.class);
         Email email = mock(Email.class);
         Mailer mailer = mock(Mailer.class);
         UserRepository userRepository = mock(UserRepository.class);
