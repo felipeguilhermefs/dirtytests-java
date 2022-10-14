@@ -12,7 +12,7 @@ import static org.mockito.Mockito.*;
 public class UserPasswordResetTest {
 
     EmailFactory emailFactory = mock(EmailFactory.class);
-    InMemoryUserRepository userRepository = spy(new InMemoryUserRepository());
+    InMemoryUserRepository userRepository = new InMemoryUserRepository();
     Email email = mock(Email.class);
     Mailer mailer = mock(Mailer.class);
 
@@ -46,7 +46,6 @@ public class UserPasswordResetTest {
         verify(email).send(any());
         verify(email2).send(any());
         verify(emailFactory, times(2)).create(any(), any(), any());
-        verify(userRepository).byId("user-id");
     }
 
     @Test
@@ -58,7 +57,6 @@ public class UserPasswordResetTest {
 
         verify(email).send(any());
         verify(emailFactory).create(any(), any(), any());
-        verify(userRepository).byId("user-id2");
     }
 
     static class InMemoryUserRepository implements UserRepository {
