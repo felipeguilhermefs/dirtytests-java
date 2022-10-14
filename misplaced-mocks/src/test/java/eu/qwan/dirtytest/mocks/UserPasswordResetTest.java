@@ -12,10 +12,10 @@ public class UserPasswordResetTest {
     UserRepository userRepository = mock(UserRepository.class);
     Email email = mock(Email.class);
     Mailer mailer = mock(Mailer.class);
+    User user = mock(User.class);
 
     @Test
     public void sendNotification() {
-        User user = mock(User.class);
         when(userRepository.byId("user-id")).thenReturn(Optional.of(user));
         when(user.getEmailAddress()).thenReturn("user@company.com");
         when(emailFactory.create(eq("user@company.com"), eq("PASSWORD_RESET"), any())).thenReturn(email);
@@ -30,7 +30,6 @@ public class UserPasswordResetTest {
 
     @Test
     public void testNotificationFails() {
-        User user = mock(User.class);
         when(userRepository.byId("user-id")).thenReturn(Optional.of(user));
         when(user.getEmailAddress()).thenReturn("user@company.com");
         when(emailFactory.create(eq("user@company.com"), eq("PASSWORD_RESET"), any())).thenReturn(email);
