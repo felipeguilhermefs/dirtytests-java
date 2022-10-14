@@ -20,7 +20,7 @@ public class UserPasswordResetTest {
     PasswordResetController ctrl = new PasswordResetController(emailFactory, userRepository, mailer);
 
     @Test
-    public void sendNotification() throws Exception {
+    void sendsResetPasswordEmailWhenUserExists() throws Exception {
         ctrl.resetPassword(EXISTING_USER);
 
         verify(mailer).send(
@@ -31,7 +31,7 @@ public class UserPasswordResetTest {
     }
 
     @Test
-    public void testNotificationFails() throws Exception {
+    void sendsEmailToServiceDeskWhenResetPasswordEmailFails() throws Exception {
         doThrow(new SendEmailFailed(new RuntimeException()))
             .when(mailer).send(eq("user@company.com"), any(), any(), any());
 
@@ -44,7 +44,7 @@ public class UserPasswordResetTest {
     }
 
     @Test
-    public void userNotFound() throws Exception {
+    void sendsProblemNotificationEmailToServiceDeskWhenUserIsNotFound() throws Exception {
         ctrl.resetPassword("not-user");
 
         verify(mailer).send(
