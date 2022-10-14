@@ -15,7 +15,8 @@ public class UserPasswordResetTest {
 
     EmailFactory emailFactory = mock(EmailFactory.class);
     InMemoryUserRepository userRepository = new InMemoryUserRepository();
-    Email email = mock(Email.class);
+    Email userEmail = new Email("", "user@company.com", "", "");
+    Email sdEmail = new Email("", "servicedesk@qwan.eu", "", "");
     Mailer mailer = mock(Mailer.class);
     PasswordResetController ctrl = new PasswordResetController(emailFactory, userRepository, mailer);
 
@@ -26,38 +27,39 @@ public class UserPasswordResetTest {
     }
 
     @Test
-    public void sendNotification() {
-        when(emailFactory.create(eq("user@company.com"), eq("PASSWORD_RESET"), any())).thenReturn(email);
-        when(email.send(mailer)).thenReturn(true);
+    public void sendNotification() throws Exception {
+        when(emailFactory.create(eq("user@company.com"), eq("PASSWORD_RESET"), any())).thenReturn(
+            userEmail);
 
         ctrl.resetPassword(EXISTING_USER);
 
-        verify(email).send(any());
+        verify(mailer).send(any(), any(), any(), any());
         verify(emailFactory).create(any(), any(), any());
     }
 
     @Test
-    public void testNotificationFails() {
-        when(emailFactory.create(eq("user@company.com"), eq("PASSWORD_RESET"), any())).thenReturn(email);
-        when(email.send(mailer)).thenReturn(false);
-        Email email2 = mock(Email.class);
-        when(email2.send(mailer)).thenReturn(true);
-        when(emailFactory.create("servicedesk@qwan.eu", "SD", null)).thenReturn(email2);
+    public void testNotificationFails() throws Exception {
+        when(emailFactory.create(eq("user@company.com"), eq("PASSWORD_RESET"), any())).thenReturn(
+            userEmail);
+        doThrow(new SendEmailFailed(new RuntimeException()))
+            .doNothing()
+            .when(mailer).send(any(), any(), any(), any());
+        when(emailFactory.create("servicedesk@qwan.eu", "SD", null))
+            .thenReturn(sdEmail);
+
         ctrl.resetPassword(EXISTING_USER);
 
-        verify(email).send(any());
-        verify(email2).send(any());
+        verify(mailer, times(2)).send(any(), any(), any(), any());
         verify(emailFactory, times(2)).create(any(), any(), any());
     }
 
     @Test
-    public void userNotFound() {
-        when(email.send(mailer)).thenReturn(false);
-        when(emailFactory.create("servicedesk@qwan.eu", "SD", null)).thenReturn(email);
+    public void userNotFound() throws Exception {
+        when(emailFactory.create("servicedesk@qwan.eu", "SD", null)).thenReturn(userEmail);
 
         ctrl.resetPassword("not-user");
 
-        verify(email).send(any());
+        verify(mailer).send(any(), any(), any(), any());
         verify(emailFactory).create(any(), any(), any());
     }
 
