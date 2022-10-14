@@ -9,10 +9,11 @@ import static org.mockito.Mockito.*;
 public class UserPasswordResetTest {
 
     EmailFactory emailFactory = mock(EmailFactory.class);
+    UserRepository userRepository = mock(UserRepository.class);
+    Email email = mock(Email.class);
 
     @Test
     public void sendNotification() {
-        Email email = mock(Email.class);
         Mailer mailer = mock(Mailer.class);
         UserRepository userRepository = mock(UserRepository.class);
         User user = mock(User.class);
@@ -30,9 +31,7 @@ public class UserPasswordResetTest {
 
     @Test
     public void testNotificationFails() {
-        Email email = mock(Email.class);
         Mailer mailer = mock(Mailer.class);
-        UserRepository userRepository = mock(UserRepository.class);
         User user = mock(User.class);
         when(userRepository.byId("user-id")).thenReturn(Optional.of(user));
         when(user.getEmailAddress()).thenReturn("user@company.com");
@@ -51,7 +50,6 @@ public class UserPasswordResetTest {
     }
     @Test
     public void userNotFound() {
-        Email email = mock(Email.class);
         Mailer mailer = mock(Mailer.class);
         UserRepository userRepository = mock(UserRepository.class);
         when(userRepository.byId("user-id")).thenReturn(Optional.empty());
